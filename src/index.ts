@@ -225,6 +225,7 @@ app.put('/profile', authenticate, async (req, res) => {
   }
 });
 
+// ! CRITICAL: BROKEN
 app.get('/notes/search', authenticate, async (req, res) => {
   const { query } = req.query;
   const { userId } = req;
