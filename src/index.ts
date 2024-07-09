@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import { signToken } from './utils/auth';
@@ -10,6 +11,7 @@ dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3002;
+app.use(cors({ origin: 'http://localhost:3000' }));
 const prisma = new PrismaClient();
 
 app.use(express.json());
