@@ -5,7 +5,6 @@ import { signToken } from './utils/auth';
 import { authenticate } from './utils/authMiddleware';
 import dotenv from 'dotenv';
 import { Context } from './utils/types';
-import { hash } from 'crypto';
 
 dotenv.config();
 
@@ -92,10 +91,33 @@ app.get('/notes', authenticate, async (req, res) => {
   const { userId } = req;
 
   try {
-    const notes = await prisma.note.findMany({
+    const userNotes = await prisma.note.findMany({
       where: { authorId: userId },
     });
-    res.json(notes);
+
+    const sharedNotes = await prisma.sharedNote.findMany({
+      where: { userId },
+      include: {
+        note: {
+          include: {
+            author: {
+              select: {
+                id: true,
+                email: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const formattedSharedNotes = sharedNotes.map(shared => ({
+      ...shared.note,
+    }));
+
+    const allNotes = [...userNotes, ...formattedSharedNotes];
+    
+    res.json(allNotes);
   } catch (error) {
     res.status(500).json({ error: 'Failed to retrieve notes' });
   }
@@ -225,9 +247,8 @@ app.put('/profile', authenticate, async (req, res) => {
   }
 });
 
-// ! CRITICAL: BROKEN
 app.get('/notes/search', authenticate, async (req, res) => {
-  const { query } = req.query;
+  const { query } = req.body;
   const { userId } = req;
 
   try {
@@ -272,7 +293,7 @@ app.put('/notes/:id/star', authenticate, async (req, res) => {
 
     const updatedNote = await prisma.note.update({
       where: { id: Number(id) },
-      data: { starred: true },
+      data: { starred: !note.starred },
     });
 
     res.json(updatedNote);
