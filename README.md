@@ -1,3 +1,6 @@
+| ❗  If you are interested in writing a frontend client for Papaya, reach out- I'd love to talk and get you started and familiar with Papaya and it's features :) ❗  |
+|-----------------------------------------|
+
 # Papaya
 
 Papaya is a collaborative notes application built with TypeScript, JWT/Bcrypt, Express, Prisma, and PostgreSQL. It allows users to register, log in, create, update, delete, and share notes with other users. Users can also manage their profiles, update passwords, and search for notes.
